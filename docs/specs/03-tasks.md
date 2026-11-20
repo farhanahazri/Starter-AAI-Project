@@ -17,17 +17,17 @@ Do Low only if time is left, and only if you ask.
 
 | Status | # | Task | Priority | Checks (from requirements §4) |
 |--------|---|------|----------|-------------------------------|
-| To do | 1 | Set up the database | High | (base for AC-01; design §1) |
-| To do | 2 | Seed the six demo users | High | AC-01, AC-13 |
-| To do | 3 | Login page and sessions | High | AC-01, AC-02, AC-08, AC-13 |
-| To do | 4 | Header and Log out | High | AC-07 |
-| To do | 5 | One generic failure message | High | AC-03 |
-| To do | 6 | Lockout after 5 wrong passwords | High | AC-04 |
-| To do | 7 | Guard every page (+ `?next`) | High | AC-05, AC-06 |
-| To do | 8 | Demo box on the login page | Low | AC-09 |
-| To do | 9 | Admin: user list + add user | Low | AC-10, AC-11 |
-| To do | 10 | Admin: reset password, deactivate | Low | AC-12 |
-| To do | 11 | Full check against the specs | High | AC-01 – AC-13 |
+| Done | 1 | Set up the database | High | (base for AC-01; design §1) |
+| Done | 2 | Seed the six demo users | High | AC-01, AC-13 |
+| Done | 3 | Login page and sessions | High | AC-01, AC-02, AC-08, AC-13 |
+| Done | 4 | Header and Log out | High | AC-07 |
+| Done | 5 | One generic failure message | High | AC-03 |
+| Done | 6 | Lockout after 5 wrong passwords | High | AC-04 |
+| Done | 7 | Guard every page (+ `?next`) | High | AC-05, AC-06 |
+| Done | 8 | Demo box on the login page | Low | AC-09 |
+| Done | 9 | Admin: user list + add user | Low | AC-10, AC-11 |
+| Done | 10 | Admin: reset password, deactivate | Low | AC-12 |
+| Done | 11 | Full check against the specs | High | AC-01 – AC-13 |
 
 ---
 
