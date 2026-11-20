@@ -34,7 +34,7 @@ export default function AddUserForm() {
         // Brief rule 5.3-7: confirm before changing data.
         if (!window.confirm("Add this user?")) event.preventDefault();
       }}
-      className="mt-8 grid grid-cols-1 gap-4 rounded-lg border border-gray-300 bg-white p-6 shadow sm:grid-cols-2"
+      className="mt-8 grid grid-cols-1 gap-4 rounded-lg border border-gray-300 bg-white p-6 text-gray-900 shadow sm:grid-cols-2"
     >
       <div>
         <label htmlFor="name" className={labelClass}>Full name</label>

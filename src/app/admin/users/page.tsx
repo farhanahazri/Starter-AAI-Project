@@ -28,16 +28,18 @@ export default async function AdminUsersPage() {
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-12">
-      <h1 className="text-2xl font-semibold text-gray-900">Users</h1>
-      <p className="mt-1 text-sm text-gray-600">
-        <Link href="/admin" className="text-blue-700 underline hover:text-blue-900">
+      <h1 className="text-2xl font-semibold text-white">Users</h1>
+      <p className="mt-1 text-sm">
+        <Link href="/admin" className="text-mint underline hover:text-white">
           ← Admin home
         </Link>
       </p>
-      <div className="mt-6 rounded-lg border border-gray-300 bg-white p-4 shadow">
+      {/* White data cards on purpose: readable table/form on the dark shell
+          (design §4 "Look and feel"), so text colour is set explicitly. */}
+      <div className="mt-6 rounded-lg border border-gray-300 bg-white p-4 text-gray-900 shadow">
         <UsersTable users={users} />
       </div>
-      <h2 className="mt-10 text-lg font-semibold text-gray-900">Add a user</h2>
+      <h2 className="mt-10 text-lg font-semibold text-white">Add a user</h2>
       <AddUserForm />
     </main>
   );

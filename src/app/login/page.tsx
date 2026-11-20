@@ -16,11 +16,11 @@ export default async function LoginPage({
   const { next } = await searchParams;
   const safeNext = typeof next === "string" && isSafeNext(next) ? next : undefined;
   return (
-    <main className="min-h-screen bg-gray-50 px-4 py-16">
-      <h1 className="text-center text-2xl font-semibold text-gray-900">
+    <main className="min-h-screen px-4 py-16">
+      <h1 className="text-center text-2xl font-semibold uppercase tracking-[0.3em] text-white">
         Budiman HRMS
       </h1>
-      <p className="mt-1 text-center text-sm text-gray-600">
+      <p className="mt-2 text-center text-sm text-slate-300">
         Leave Request module — log in with your work email.
       </p>
       <LoginForm next={safeNext} />

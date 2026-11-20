@@ -1,1 +1,24 @@
 @import "tailwindcss";
+
+/* Look and feel tokens — docs/specs/02-design.md §4 "Look and feel".
+   The one place the reference-picture palette is defined. */
+@theme {
+  --color-night: #0a2436;
+  --color-night-deep: #071b29;
+  --color-lagoon: #0f3c4e;
+  --color-mint: #52e0b5;
+  --color-brand: #2aa87f;
+  --color-brand-deep: #1f8c69;
+}
+
+/* Navy base with soft teal glows, echoing the reference picture's
+   geometric background in pure CSS (no image asset). */
+.plexus-bg {
+  background-color: var(--color-night-deep);
+  background-image:
+    radial-gradient(55rem 35rem at 12% -8%, rgba(82, 224, 181, 0.16), transparent 60%),
+    radial-gradient(45rem 30rem at 95% 12%, rgba(21, 94, 99, 0.55), transparent 65%),
+    radial-gradient(60rem 40rem at 85% 105%, rgba(42, 168, 127, 0.22), transparent 60%),
+    radial-gradient(40rem 30rem at 8% 92%, rgba(15, 60, 78, 0.9), transparent 70%),
+    linear-gradient(160deg, #0a2436 0%, #0d3145 55%, #0f3c4e 100%);
+}

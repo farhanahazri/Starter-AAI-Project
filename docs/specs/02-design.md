@@ -101,16 +101,60 @@ Fixed by the brief (section 7.1) — nothing added, nothing upgraded:
 
 | Route | Who | What it shows | Status |
 |-------|-----|---------------|--------|
-| `/login` | Anyone | Email + password form; one generic error line; the "Demo data" box with the six emails and `password123` (U9). Already-signed-in visitors go to their home | To do |
-| `/` | Anyone | The old placeholder page goes away: signed in → redirect to that role's home; not signed in → `/login` | To do |
-| `/employee` | Employee | Header (name, division, Log out button) + placeholder card saying "Employee home". Real content comes with the leave spec | To do |
-| `/supervisor` | Supervisor | Same shape, supervisor's placeholder | To do |
-| `/hr` | HR | Same shape, HR's placeholder | To do |
-| `/admin` | Admin | Admin placeholder + a link to the users page | To do |
-| `/admin/users` | Admin | Table of users (name, email, role, division, active, locked) with Add user, Reset password, Deactivate/Reactivate; confirmation before each action and a success message afterwards (brief rule 7) | To do |
+| `/login` | Anyone | Card with a mint "STAFF LOGIN" band holding the email + password form and one generic error line; the "Demo data" box with the six emails and `password123` below it (U9). Already-signed-in visitors go to their home | Done |
+| `/` | Anyone | The old placeholder page goes away: signed in → redirect to that role's home; not signed in → `/login` | Done |
+| `/employee` | Employee | Header (name, Log out button) + card with a mint "EMPLOYEE HOME" band and placeholder text. Real content comes with the leave spec | Done |
+| `/supervisor` | Supervisor | Same shape, "SUPERVISOR HOME" band | Done |
+| `/hr` | HR | Same shape, "HR HOME" band | Done |
+| `/admin` | Admin | "ADMIN HOME" band + a link to the users page | Done |
+| `/admin/users` | Admin | Table of users (name, email, role, division, active, locked) with Add user, Reset password, Deactivate/Reactivate; confirmation before each action and a success message afterwards (brief rule 7) | Done |
 
 Logout is not a page: a Log out button posts the `logout` server action,
 which deletes the cookie and redirects to `/login`.
+
+### Look and feel (visual reference: `src/IMAGE LOGIN/OIP.webp`)
+
+Agreed 2026-11-20: the login page and the role homes follow the attached
+reference picture — a dark navy page with soft teal glows and a centered
+translucent card under a mint-teal header band. This is **appearance only**:
+behaviour is whatever §2/§4 already say.
+
+The palette lives in exactly one place, `src/app/globals.css`: Tailwind v4
+`@theme` tokens plus a single `.plexus-bg` class that paints the navy base and
+the layered radial teal glows with CSS gradients (no image asset, no new
+library).
+
+| Token | Hex | Used for |
+|-------|-----|----------|
+| `night` | `#0A2436` | card bodies, signed-in header bar |
+| `night-deep` | `#071B29` | page base under the glows; dark text on mint bands |
+| `lagoon` | `#0F3C4E` | mid-tone in the background glows |
+| `mint` | `#52E0B5` | card header bands, links, field icons, accents |
+| `brand` | `#2AA87F` | primary buttons; hover `brand-deep` `#1F8C69` |
+
+The card (login and each role home):
+
+- Centered, `max-w-sm` on `/login`, `max-w-md` on the homes; rounded 16 px
+  (`rounded-2xl`); translucent navy body (night at ~90 %); hairline mint
+  border (25 %); soft drop shadow.
+- Header band: full-width mint, ~48 px tall, dark-teal text, ALL CAPS,
+  wide letter-spacing (`tracking-[0.3em]`), reading "STAFF LOGIN" or
+  "<ROLE> HOME".
+- Field rows: mint icon + transparent input, white text, underline only
+  (hairline white 30 %, mint on focus); ~1.25 rem between fields; 2 rem
+  padding inside the card body.
+- Primary button: solid `brand` teal, white ALL-CAPS letter-spaced label,
+  `rounded-md`, full width.
+- Error text: pale red (`#FCA5A5`) so it stays readable on navy.
+
+Background and shell: `body` carries `plexus-bg` on every page; body text is
+light (`slate-100`); the signed-in header is a `night` bar with mint accents.
+`/admin/users` keeps its white table and form cards (with explicit dark text)
+so the data stays readable on the dark shell.
+
+Deliberately absent from the login card although the picture shows them —
+requirements §5 excludes those features, and this restyle adds no behaviour:
+"Remember me", "Forgot Password?", and any social-login buttons.
 
 ## 5. Where the code lives
 
@@ -119,7 +163,8 @@ which deletes the cookie and redirects to `/login`.
 | `prisma/schema.prisma` | The `User` model from section 1 |
 | `prisma/seed.ts` | The six demo users of Reference B, hashed passwords |
 | `.env` (git-ignored) | `DATABASE_URL`, `SESSION_SECRET` |
-| `src/app/layout.tsx` | Root layout: renders a small server-only header (name + Log out) only when `verifySession()` returns a user |
+| `src/app/globals.css` | Tailwind import + the `@theme` look-and-feel tokens and the `.plexus-bg` background class (§4 "Look and feel") |
+| `src/app/layout.tsx` | Root layout: dark plexus page shell; renders a small server-only header (name + Log out) only when `verifySession()` returns a user |
 | `src/app/page.tsx` | Replaces the placeholder: redirect per rule 4 |
 | `src/app/login/page.tsx` | Login screen + demo box (server component) |
 | `src/app/employee/page.tsx`, `supervisor/`, `hr/`, `admin/page.tsx` | Role homes: first line calls `verifySession()` and the role check |
