@@ -421,7 +421,7 @@ Every row is checked on the server inside the action, not just in the UI:
 | `src/app/supervisor/page.tsx`, `src/app/hr/page.tsx` | placeholders → queue + history |
 | `src/app/admin/page.tsx` | + the "All leave records" link |
 | `src/app/admin/leave/page.tsx` | read-only table + status filter |
-| `src/components/` | `LeaveForm`, `LeaveRows` (+ status badge), `DecisionButtons`, `AdminLeaveTable` |
+| `src/components/` | `LeaveForm`, `LeaveRows` (+ status badge), `DecisionButtons`, `SendToHrButton`, `WithdrawButton`, `AdminLeaveTable` |
 | `prisma/seed.ts` | + the demo requests of rule 11 |
 
 ## 7. Security (in plain words)

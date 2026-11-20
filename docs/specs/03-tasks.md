@@ -229,17 +229,17 @@ section. Task 12 (the full check) is High but always runs last.
 
 | Status | # | Task | Priority | Checks (from requirements §4) |
 |--------|---|------|----------|-------------------------------|
-| To do | 1 | LeaveRequest table + migration | High | (base for AC-14; design §1) |
-| To do | 2 | Status, type and validation helpers | High | (base for AC-15, AC-22; design rules 1–2) |
-| To do | 3 | New request form + create action | High | AC-14, AC-15 |
-| To do | 4 | My requests list (status, remark, duration) | High | AC-22 |
-| To do | 5 | Supervisor queue + Sign/Reject | High | AC-16, AC-17, AC-25, AC-28 |
-| To do | 6 | Employee: Send to HR | High | AC-18 |
-| To do | 7 | HR queue + decide, officer recorded, first decision wins | High | AC-19, AC-20, AC-21 |
-| To do | 8 | Confirmation + success on every action | High | AC-24 |
-| To do | 9 | Admin: all-records table + status filter | Medium | AC-23 |
-| To do | 10 | Withdraw while Pending supervisor | Low | AC-26 |
-| To do | 11 | Seed: demo requests in every status | Low | AC-27 |
+| Done | 1 | LeaveRequest table + migration | High | (base for AC-14; design §1) |
+| Done | 2 | Status, type and validation helpers | High | (base for AC-15, AC-22; design rules 1–2) |
+| Done | 3 | New request form + create action | High | AC-14, AC-15 |
+| Done | 4 | My requests list (status, remark, duration) | High | AC-22 |
+| Done | 5 | Supervisor queue + Sign/Reject | High | AC-16, AC-17, AC-25, AC-28 |
+| Done | 6 | Employee: Send to HR | High | AC-18 |
+| Done | 7 | HR queue + decide, officer recorded, first decision wins | High | AC-19, AC-20, AC-21 |
+| Done | 8 | Confirmation + success on every action | High | AC-24 |
+| Done | 9 | Admin: all-records table + status filter | Medium | AC-23 |
+| Done | 10 | Withdraw while Pending supervisor | Low | AC-26 |
+| Done | 11 | Seed: demo requests in every status | Low | AC-27 |
 | To do | 12 | Full check against the specs | High | AC-14 – AC-28 |
 
 ---
