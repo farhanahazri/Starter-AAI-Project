@@ -102,3 +102,139 @@ show a role-appropriate placeholder until the leave-request specs land.
 - Self sign-up of accounts — Admin adds users, or the seed script does
 - Managing divisions and designations — they are the fixed lists from the brief
 - Anything about leave requests themselves — that is the next spec
+
+---
+
+# Leave Request – Requirements
+
+> **This file answers:** What should the leave module do, and how do I test
+> it?
+> **Who:** The AI drafted it from the brief (`docs/Agentic AI - HRMS
+> Doc.pdf` §4–6) and the interview of 2026-11-20. You review it.
+>
+> Numbering continues from the login section above (stories U11–U21,
+> checks AC-14–AC-28) so every ID stays unique across this file.
+> When the behaviour needs to change, update this file **first**.
+
+## 1. The problem
+
+Budiman still approves leave on paper: forms get lost, an employee
+cannot see where a request is, and HR has no single list waiting for a
+decision (brief §2). This module replaces that flow inside the login the
+login module already guards: the employee submits, the supervisor signs
+or rejects, the employee sends a signed request to a shared HR queue,
+HR decides, and the Admin watches over everything.
+
+Fixed by the brief: the workflow and its statuses (§5.2), the supervisor
+chosen from the requester's own division (§5.3-3), a remark required on
+every rejection (FR-03, FR-05), the deciding HR officer recorded
+(FR-05), Admin view only (FR-08), confirmation + success message on
+every action (FR-07), and OWASP on everything (FR-09).
+
+Decided in the interview 2026-11-20 (my proposals, you accepted):
+withdraw before the supervisor acts, past dates allowed, duration shown
+as calendar days, the "what it's for" text required for **Other** only,
+HR sees only requests that reached the HR stage, Admin is one filtered
+table, and the seed creates demo requests.
+
+This module provides:
+
+1. A request form for employees (five leave types, supervisor from
+   their own division)
+2. A supervisor queue: sign or reject with a remark
+3. Send-to-HR, then a shared HR queue: approve or reject, officer
+   recorded, first decision wins
+4. A list per role showing status, remarks and duration
+5. An Admin view of every record, view only
+6. Withdraw while still *Pending supervisor* (beyond the brief → Low)
+7. Demo requests in the seed so every screen has data
+
+## 2. Who uses it (roles)
+
+| Role | Leave pages | What they do here |
+|------|-------------|-------------------|
+| **Employee** | `/employee`, `/employee/leave/new` | Submits, tracks, withdraws (while *Pending supervisor*), sends a signed request to HR |
+| **Supervisor** | `/supervisor` | Signs or rejects the requests sent to them; a rejection needs a remark |
+| **HR** | `/hr` | Approves or rejects the shared queue; a rejection needs a remark; the system records who decided |
+| **Admin** | `/admin/leave` | Sees every record, changes nothing |
+
+Only the **Employee** role submits leave — Supervisors, HR and Admin
+have no submit form (brief rule 5.3-2; my call, flagged, not overridden).
+
+## 3. User stories
+
+- **U11. Submit a leave request** *(High)*. As an employee, I submit a
+  leave type, start and end date, and a supervisor — the dropdown offers
+  only supervisors from my own division — and after a confirmation my
+  request appears as *Pending supervisor*. The only date rule is
+  end ≥ start, past dates allowed; the "what it's for" text is required
+  when the type is Other. (FR-02)
+- **U12. The supervisor decides** *(High)*. As a supervisor, I see only
+  the requests sent to me; I sign them or reject them, and a rejection
+  must carry a remark. The result is final. (FR-03)
+- **U13. Send a signed request to HR** *(High)*. As an employee, a
+  signed request of mine shows a **Send to HR** button; one click moves
+  it into the shared HR queue. (FR-04)
+- **U14. HR decides** *(High)*. As an HR officer, I see every
+  *Pending HR* request; I approve or reject (a rejection needs a
+  remark), the system records which officer decided, and if another
+  officer got there first my click changes nothing. (FR-05)
+- **U15. I see what I must act on** *(High)*. Every role gets its own
+  current and past lists with status and remarks; HR sees only requests
+  that reached the HR stage; Admin sees everything. (FR-06)
+- **U16. Confirm, then know it worked** *(High)*. Every leave action
+  asks for confirmation first and shows a success message after. (FR-07)
+- **U17. Admin oversight** *(Medium)*. As Admin, I see every leave
+  record in one newest-first table with a status filter, view only.
+  (FR-08)
+- **U18. Withdraw before the supervisor acts** *(Low)*. As an employee,
+  I can withdraw one of my requests while it is still *Pending
+  supervisor*; never after. *Agreed in interview; beyond the brief, so
+  Low per project rules.*
+- **U19. Duration at a glance** *(Medium)*. Lists show the number of
+  days next to each request (calendar days, both ends included),
+  computed from the dates — nothing stored, no work-day calendar.
+  *Agreed in interview; unlike U18 this is not a separate feature but
+  part of the FR-06 lists themselves, so Medium rather than the usual
+  Low for beyond-brief extras.*
+- **U20. Demo requests are ready** *(Low)*. A fresh database gets
+  requests covering every status, so each role's screen has data to
+  show without clicking through the flow first. *Agreed in interview.*
+- **U21. Secure by design (leave)** *(High)*. Every leave page and
+  every leave action re-checks the role, the owner and the current
+  status on the server; a wrong step shows an error and changes nothing
+  (FR-09, OWASP Top 10).
+
+## 4. Acceptance checklist
+
+| Status | ID | Check | How to test |
+|--------|----|-------|-------------|
+| Done | AC-14 | Employee submits; supervisor dropdown = own division only; past dates accepted (U11) | • Log in as `employee-1@budiman.com` → `/employee` → New request<br>• Pick Annual leave, 2026-11-25 → 2026-12-03<br>• Open the supervisor dropdown: exactly **Supervisor 1** and **Supervisor 2** (the two Finance supervisors) — no HR, no Admin, no employees<br>• Confirm → success message; the row appears in My requests as *Pending supervisor*<br>• Submit again with start = yesterday, end = today → accepted (interview: past dates allowed) |
+| Done | AC-15 | Bad data is refused by the server, even from a tampered form (U11) | • End before start → clear error, nothing stored<br>• Type **Other** with empty "what it's for" → clear error; type **Compassionate** with no text → accepted (interview: Other only)<br>• In DevTools, change the supervisor option's value to hr-1's id and submit → the server refuses with a clear error and stores nothing |
+| Done | AC-16 | The supervisor sees only their own; sign works (U12) | • As `employee-1@`, submit one request naming Supervisor 1 and one naming Supervisor 2<br>• Log in as `supervisor-1@budiman.com`: only the first is in "Waiting for your decision"; click **Sign** → success, status *Signed*<br>• Log in as `supervisor-2@budiman.com` (private window): the signed request is nowhere in their lists |
+| Done | AC-17 | Supervisor rejection needs a remark and is final (U12) | • As `supervisor-2@`, open the request naming them, choose **Reject** with an empty remark → refused with a clear message<br>• Reject again with remark "team short-handed this month" → status *Rejected by supervisor*<br>• As `employee-1@`: the row shows the rejection and the remark, and offers no further action |
+| Done | AC-18 | Employee sends a signed request to HR (U13) | • As `employee-1@`, the *Signed* row shows a **Send to HR** button; rows in other statuses show none<br>• Click → confirmation → success; status *Pending HR*; the button is gone |
+| Done | AC-19 | HR approves or rejects; the officer is recorded (U14) | • As `hr-1@budiman.com`, `/hr` shows the request in the HR queue; `hr-2@` in a private window sees the same queue<br>• hr-1 approves → status *Approved*, "Decided by HR 1"<br>• Send another request through to *Pending HR*; hr-2 rejects with no remark → refused; with a remark → *Rejected by HR*, "Decided by HR 2"; the employee sees the remark |
+| Done | AC-20 | First HR decision wins (U14) | • Get a request to *Pending HR*; open `/hr` as hr-1 in one window and hr-2 in another<br>• hr-2 approves first<br>• hr-1 clicks approve → message "this request has already been decided"; the status stays *Approved* and still says "Decided by HR 2" |
+| Done | AC-21 | HR cannot see requests before the HR stage (U15) | • As `employee-1@`, submit a new request (still *Pending supervisor*)<br>• hr-1 opens `/hr`: it is not in the HR queue and not in the Decided list<br>• After the supervisor signs and the employee sends it, it appears |
+| Done | AC-22 | Lists show status, remark and duration (U15, U19) | • `employee-1@`'s list: the 2026-11-25 → 2026-12-03 request shows **9 days**; the AC-17 row shows *Rejected by supervisor* with its remark<br>• The supervisor's and HR's history lists likewise show status and remarks; the HR history names the deciding officer |
+| Done | AC-23 | Admin sees everything, changes nothing (U17) | • As `admin@budiman.com`, open `/admin/leave`: every record from the tests above, newest first, remarks and officer visible<br>• Status filter → *Approved* shows only approvals<br>• The page has no Sign / Reject / Send / Withdraw buttons at all |
+| To do | AC-24 | Every action confirms, then celebrates (U16) | • Walk through submit, Sign, Reject, Send to HR, HR approve, HR reject, Withdraw: each asks for confirmation — cancelling leaves everything unchanged — and shows a success message and the new status after |
+| Done | AC-25 | Wrong role or wrong request refused server-side (U21) | • `supervisor-1@` opens `/employee/leave/new` → bounced to `/supervisor`<br>• `employee-1@` opens `/admin/leave` → bounced to `/employee`<br>• As supervisor-2, tamper with a decision form's hidden id to aim at a request assigned to supervisor-1 → the server refuses and the status is unchanged |
+| Done | AC-26 | Withdraw only before the supervisor acts (U18) | • As `employee-1@`, submit a fresh request and click **Withdraw** → confirmation → status *Withdrawn*, no further buttons<br>• On a *Signed* request there is no Withdraw button; a tampered attempt is refused by the server<br>• A request already decided or withdrawn can never be withdrawn |
+| Done | AC-27 | Seed produces requests in every status (U20) | • Delete the SQLite file, run `npx prisma migrate dev` and `npx prisma db seed`<br>• As each role, the pages show demo requests covering all seven statuses (Pending supervisor, Signed, Pending HR, Approved, Rejected by supervisor, Rejected by HR, Withdrawn)<br>• Re-run the seed → still no duplicates |
+| Done | AC-28 | A rejection is final; a re-apply is free (U11) | • After AC-17's rejection, `employee-1@` immediately submits a new request with the same type, dates and supervisor → accepted as a new *Pending supervisor* row<br>• The rejected row keeps its status and remark unchanged (interview: no duplicate blocking) |
+
+## 5. Not included (for now)
+
+- Leave balances or quotas — the brief keeps no allowance data
+- Work-day calendars: weekends and holidays are **not** deducted, no
+  half days (U19 keeps it to calendar days)
+- Editing a request after submit — withdraw (U18) is the only exit
+- Changing the chosen supervisor; an employee never picks anyone outside
+  their own division
+- Blocking duplicate or overlapping requests (AC-28 allows re-applying)
+- Email or any notification — roles find out by opening their page
+- Printing, PDF export, attachments, search boxes, charts, pagination —
+  the Admin table (AC-23) is the only extra view
+- Leave for Supervisors, HR or Admin — only the Employee role submits

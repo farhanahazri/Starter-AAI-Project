@@ -1,6 +1,6 @@
-// Budiman HRMS – Login module schema (docs/specs/02-design.md §1)
-// Only the User table exists at this stage; leave requests come with the
-// next spec.
+// Budiman HRMS – schema. The User model is the login module's
+// (docs/specs/02-design.md §1); the LeaveRequest model comes from the
+// Leave Request design section §1 (docs/specs/03-tasks.md leave task 1).
 
 generator client {
   provider = "prisma-client-js"
@@ -24,4 +24,29 @@ model User {
   failedAttempts Int       @default(0) // wrong passwords in a row (U7)
   lockedUntil    DateTime? // while in the future the account is locked (U7)
   createdAt      DateTime  @default(now())
+}
+
+// One row per leave request (Leave design §1; leave tasks 1–12).
+// No Prisma relations: plain user ids, checked by the server on every
+// action (Leave design §1, my call — the User model stays untouched).
+model LeaveRequest {
+  id               Int       @id @default(autoincrement())
+  employeeId       Int // requester, role EMPLOYEE (rule 1)
+  supervisorId     Int // chosen supervisor; SUPERVISOR, active, same division (rule 1)
+  leaveType        String // ANNUAL | MATERNITY | UNPAID | COMPASSIONATE | OTHER (Reference C)
+  otherLeaveType   String? // "what the leave is for"; only when leaveType is OTHER
+  startDate        DateTime // normalised to UTC midnight (rule 2)
+  endDate          DateTime // never before startDate; past dates allowed (rule 1)
+  status           String    @default("PENDING_SUPERVISOR") // Reference D; server-set only
+  supervisorRemark String? // the supervisor's reason; required on supervisor reject
+  hrOfficerId      Int? // the HR user who approved or rejected (AC-19)
+  hrRemark         String? // the HR reason; required on HR reject
+  submittedAt      DateTime  @default(now())
+  signedAt         DateTime? // set when the supervisor signs
+  decidedAt        DateTime? // set on the HR decision
+  withdrawnAt      DateTime? // set on withdraw
+
+  @@index([employeeId])
+  @@index([supervisorId, status])
+  @@index([status])
 }
