@@ -1,0 +1,27 @@
+// Budiman HRMS – Login module schema (docs/specs/02-design.md §1)
+// Only the User table exists at this stage; leave requests come with the
+// next spec.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int       @id @default(autoincrement())
+  name           String
+  icNo           String    @unique // format xx-xxxxxx (brief §7.2)
+  email          String    @unique // lower-case, @budiman.com, used to log in
+  passwordHash   String    // bcrypt hash only, never plain text
+  role           String    // EMPLOYEE | SUPERVISOR | HR | ADMIN
+  division       String    // one of Reference A divisions
+  designation    String    // job title belonging to the division
+  active         Boolean   @default(true) // deactivate, never delete (U10)
+  failedAttempts Int       @default(0) // wrong passwords in a row (U7)
+  lockedUntil    DateTime? // while in the future the account is locked (U7)
+  createdAt      DateTime  @default(now())
+}
